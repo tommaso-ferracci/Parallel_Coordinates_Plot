@@ -163,9 +163,9 @@ def get_path(data, i):
     path = Path(verts, codes)
     return path
 
-def plot_par_coords(data, labels=None, ytype=None, ylim=None, ylabels=None, figsize=(10, 5), 
-                              rect=[0.125, 0.1, 0.75, 0.8], curves=True, linewidth=1.0, alpha=1.0, 
-                              colorbar=True, colorbar_width=0.02, cmap=plt.get_cmap("inferno_r")):
+def plot_par_coordinates(data, labels=None, ytype=None, ylim=None, ylabels=None, figsize=(10, 5), 
+                         rect=[0.125, 0.1, 0.75, 0.8], curves=True, linewidth=1.0, alpha=1.0, 
+                         colorbar=True, colorbar_width=0.02, cmap=plt.get_cmap("inferno_r")):
     """
     Displays a parallel coordinates plot of the hyperparameters search.
 
