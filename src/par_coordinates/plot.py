@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.path import Path
 from matplotlib.patches import PathPatch
 
-# inspired by https://github.com/gregornickel/pcp, refactored to work with pandas dataframes
+# based on https://github.com/gregornickel/pcp, refactored to work with pandas dataframes
 def set_ytype(data, ytype=None, colorbar=False):
     """
     Specifies for each column if the data is factor, linear or logarithmic.

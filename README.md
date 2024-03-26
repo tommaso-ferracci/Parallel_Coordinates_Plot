@@ -20,12 +20,14 @@ from par_coordinates import plot_par_coordinates
 # get results dataframe for specific tuner
 results = get_results.sklearn(grid_search, "roc_auc")
 # display parallel coordinates plot
-fig = plot_par_coordinates(results, labels=["maximum tree depth", "minimum samples in leaf node", "number of trees", "F1 score"],
-                           figsize=(8, 4), curves=True, linewidth=0.8, alpha=0.8, cmap=plt.get_cmap("copper"))
+fig = plot_par_coordinates(results, labels=["maximum tree depth", "minimum samples in leaf node", 
+                           "number of trees", "F1 score"], figsize=(8, 4), curves=True, 
+                           linewidth=0.8, alpha=0.8, cmap=plt.get_cmap("copper"))
 ```
 resulting in the following visualization (with room for customization):
 <p align="middle">
-  <img src="outputs/figures/random_search.png" width="80%"/>
+  <img src="outputs/figures/random_search.png" width="100%"/>
 </p>
 
 ## License
+The package is freely available under MIT license. The code in `src/par_coordinates/plot.py` is based on [pcp](https://github.com/gregornickel/pcp).
