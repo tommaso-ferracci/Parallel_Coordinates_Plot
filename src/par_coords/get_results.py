@@ -1,12 +1,5 @@
 # collection of functions to retrieve results dataframe for the hyperparameter search for various frameworks
-import numpy as np
 import pandas as pd
-
-import keras_tuner
-import tensorflow as tf
-from tensorflow import keras
-import sklearn.model_selection
-import optuna
 
 def keras_tuner(tuner, metric, num_best_trials=1):
     """
@@ -81,3 +74,4 @@ def optuna(study, metric, custom_columns=[]):
     results.columns = [n.split("params_")[-1] for n in results.columns]
     results.columns = list(results.columns[:-1]) + [metric]
     return results 
+

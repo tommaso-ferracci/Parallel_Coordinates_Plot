@@ -1,0 +1,4 @@
+src/par_coords/__pycache__/
+src/build/
+src/dist/
+*.egg-info/

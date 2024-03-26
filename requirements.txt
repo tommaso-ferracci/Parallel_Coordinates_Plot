@@ -1,7 +1,7 @@
 # to use the functions in src/helper_functions:
-numpy==1.26.4
-matplotlib==3.8.3
-pandas==2.2.1
+numpy>=1.26.4
+matplotlib>=3.8.3
+pandas>=2.2.1
 
 # to reproduce all the tutorial examples:
 absl-py==2.1.0
