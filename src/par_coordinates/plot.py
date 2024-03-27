@@ -16,7 +16,7 @@ def set_ytype(data, ytype=None, colorbar=False):
         colorbar (bool): True if colorbar needs to be displayed (by default False)
 
     Returns:
-        ytype (list): list specifying "factor", "linear" or "log" for each column
+        list: list specifying "factor", "linear" or "log" for each column
     """
     if ytype == None:
         ytype = [[] for _ in range(len(data.columns))]
@@ -40,7 +40,7 @@ def set_ylabels(data, ytype, ylabels=None):
         ylabels (list): list specifying the correct labels for each column (by default None)
 
     Returns:
-        ylabels (list): list specifying the correct labels for each column
+        list: list specifying the correct labels for each column
     """
     if ylabels == None:
         ylabels = [[] for _ in range(len(data.columns))]
@@ -67,7 +67,7 @@ def replace_str_values(data, ytype, ylabels):
         ylabels (list): list specifying the correct labels for each column (returned by set_ylabels)
 
     Returns:
-        data (np.ndarray): processed data array
+        np.ndarray: processed data array
     """
     for i in range(len(ytype)):
         if ytype[i] == "factor":
@@ -84,7 +84,7 @@ def set_ylim(data, ylim=None):
         ylim (list): list specifying y-axis limits for columns in data (by default None)
 
     Returns:
-        ylim (list): list specifying y-axis limits for columns in data
+        list: list specifying y-axis limits for columns in data
     """
     if ylim == None:
         ylim = [[] for _ in range(data.shape[0])]
@@ -109,7 +109,7 @@ def get_performance(data, ylim):
         ylim (list): list specifying y-axis limits for columns in data (returned by set_ylim)
 
     Returns:
-        performance (np.ndarray): performance metric scaled to [0, 1]
+        np.ndarray: performance metric scaled to [0, 1]
     """
     y_min = ylim[-1][0]
     y_max = ylim[-1][1]
@@ -126,7 +126,7 @@ def rescale_data(data, ytype, ylim):
         ylim (list): list specifying y-axis limits for columns in data (returned by set_ylim)
 
     Returns:
-        data (np.ndarray): rescaled data array
+        np.ndarray: rescaled data array
     """
     min_0 = ylim[0][0]
     max_0 = ylim[0][1]
@@ -154,7 +154,7 @@ def get_path(data, i):
         i (int): specifies which observation we are considering
 
     Returns:
-        path (matplotlib.path.Path): interpolated curve
+        matplotlib.path.Path: interpolated curve
     """
     n = data.shape[0] # number of y-axes
     verts = list(zip([x for x in np.linspace(0, n - 1, n * 3 - 2)], 
@@ -170,15 +170,12 @@ def plot_par_coordinates(data, labels=None, ytype=None, ylim=None, ylabels=None,
     Displays a parallel coordinates plot of the hyperparameters search.
 
     Arguments:
-        data (pd.DataFrame): pandas dataframe where the last column is the performance metric, the others represent the various 
-            hyperparameters values for the search
+        data (pd.DataFrame): pandas dataframe where the last column is the performance metric, the others represent 
+        the various hyperparameters values for the search
         labels (list): labels for y-axes (default to None)
-        ytype (list): data type for each axis. Defaults to None which is then mapped to "factor" for strings and "linear" for floats. 
-            If ytype is passed, logarithmic axes are also possible, example: ["factor", "linear", "log", [], ...]. Empty fields must 
-            be filled with an empty list []
+        ytype (list): data type for each axis. Defaults to None which is then mapped to "factor" for strings and "linear" for floats. If ytype is passed, logarithmic axes are also possible, example: ["factor", "linear", "log", [], ...]. Empty fields must be filled with an empty list []
         ylim (list): limits for each axis (default to None). Custom min and max values can be passed, example: [[0, 1], [], ...]
-        ylabels (list): y-tick labels for each axis (default to None). Only use this option if you want to print more categories than you 
-            have in your dataset for factor axes. Requires ylim to be set correctly
+        ylabels (list): y-tick labels for each axis (default to None). Only use this option if you want to print more categories than you have in your dataset for factor axes. Requires ylim to be set correctly
         figsize (tuple): width, height in inches of the image (default to None)
         rect: (list): [left, bottom, width, height], defines the position of the figure on the canvas (default to [0.125, 0.1, 0.75, 0.8])
         curves (bool): if True, B-spline curves are drawn instead of simple lines (default to True)
@@ -187,9 +184,9 @@ def plot_par_coordinates(data, labels=None, ytype=None, ylim=None, ylabels=None,
         colorbar (bool): if True, colorbar for the performance metric is drawn (default to True)
         colorbar_width (float): width of the colorbar (default to 0.02)
         cmap (matplotlib.colors.Colormap): color palette for colorbar (default to "inferno_r")
-    
+
     Returns:
-        fig (matplotlib.figure.Figure): figure to be displayed, saved or further customized
+        matplotlib.figure.Figure: figure to be displayed, saved or further customized
     """
     [left, bottom, width, height] = rect
     # work on copy as the dataframe will be processed

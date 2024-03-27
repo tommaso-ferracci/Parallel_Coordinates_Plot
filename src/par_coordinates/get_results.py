@@ -13,7 +13,7 @@ def keras_tuner(tuner, metric, num_best_trials=1):
         num_best_trials (int): how many trials to retrieve, in order of best performance (default to 1)
 
     Returns:
-        results (pd.DataFrame): results dataframe for the hyperparameter search
+        pd.DataFrame: results dataframe for the hyperparameter search
     """
     # get best trials
     trials = tuner.oracle.get_best_trials(num_best_trials)
@@ -38,7 +38,7 @@ def sklearn(tuner, metric):
         metric (str): name of the metric to retrieve (example: "mean_test_score")
 
     Returns:
-        results (pd.DataFrame): results dataframe for the hyperparameter search
+        pd.DataFrame: results dataframe for the hyperparameter search
     """
     hyperparameters = tuner.cv_results_["params"]
     scores = tuner.cv_results_["mean_test_score"]
@@ -59,7 +59,7 @@ def optuna(study, metric, custom_columns=[]):
         custom_columns (list): list of names for custom columns defined by the user (default to [])
 
     Returns:
-        results (pd.DataFrame): results dataframe for the hyperparameter search
+        pd.DataFrame: results dataframe for the hyperparameter search
     """
     results_df = study.trials_dataframe()
     custom_columns = ["user_attrs_" + n for n in custom_columns]
