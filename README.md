@@ -11,6 +11,7 @@ The jupyter notebook `analyses/tutorial.ipynb` contains detailed examples of the
 - random search in `keras_tuner` for a multilayer perceptron
 - grid search and random search in `sklearn` for a random forest classifier
 - Bayesian optimization in `optuna` for a XGBoost regressor
+- exploratory data analysis of the `mtcars` dataset
 
 The workflow is always the same:
 ```python
