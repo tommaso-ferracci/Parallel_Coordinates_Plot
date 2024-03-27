@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="par_coordinates",
-    version="0.2",
+    version="0.3",
     packages=find_packages(),
     install_requires=[
         "numpy>=1.26.4",
@@ -13,7 +13,7 @@ setup(
     author="Tommaso Ferracci",
     url="https://github.com/tommaso-ferracci/Parallel_Coordinates_Plot",
     project_urls={
-        # "Documentation": "...",
+        "Documentation": "https://tommaso-ferracci.github.io/Parallel_Coordinates_Plot/index.html",
         "Source": "https://github.com/tommaso-ferracci/Parallel_Coordinates_Plots",
     },
     license="MIT",

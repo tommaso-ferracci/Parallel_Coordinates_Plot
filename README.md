@@ -28,5 +28,7 @@ resulting in the following visualization (with room for customization):
 
 ![](https://github.com/tommaso-ferracci/Parallel_Coordinates_Plot/raw/main/outputs/figures/random_search.png)
 
+For additional information the official documentation is available [here](https://tommaso-ferracci.github.io/Parallel_Coordinates_Plot/index.html).
+
 ## License
 The package is freely available under MIT license. The code in `src/par_coordinates/plot.py` is based on [pcp](https://github.com/gregornickel/pcp).
