@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>par_coordinates.plot &mdash; par_coordinates 0.3 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/fonts.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=b489f392"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            par_coordinates
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../par_coordinates.html">par_coordinates package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">par_coordinates</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">par_coordinates.plot</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for par_coordinates.plot</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> 
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.path</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">PathPatch</span>
+
+<span class="c1"># based on https://github.com/gregornickel/pcp, refactored to work with pandas dataframes</span>
+<div class="viewcode-block" id="set_ytype">
+<a class="viewcode-back" href="../../par_coordinates.html#par_coordinates.plot.set_ytype">[docs]</a>
+<span class="k">def</span> <span class="nf">set_ytype</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ytype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specifies for each column if the data is factor, linear or logarithmic.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        data (pd.DataFrame): results dataframe from hyperparameter tuning</span>
+<span class="sd">        ytype (list): list specifying &quot;factor&quot;, &quot;linear&quot; or &quot;log&quot; for each column (by default None)</span>
+<span class="sd">        colorbar (bool): True if colorbar needs to be displayed (by default False)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: list specifying &quot;factor&quot;, &quot;linear&quot; or &quot;log&quot; for each column</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ytype</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ytype</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">))]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ytype</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ytype</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="n">ytype</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;factor&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ytype</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span> 
+    <span class="k">if</span> <span class="n">colorbar</span><span class="p">:</span> 
+        <span class="k">assert</span> <span class="n">ytype</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="s2">&quot;colorbar axis needs to be linear&quot;</span>
+    <span class="k">return</span> <span class="n">ytype</span></div>
+
+
+<div class="viewcode-block" id="set_ylabels">
+<a class="viewcode-back" href="../../par_coordinates.html#par_coordinates.plot.set_ylabels">[docs]</a>
+<span class="k">def</span> <span class="nf">set_ylabels</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ytype</span><span class="p">,</span> <span class="n">ylabels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specifies for all columns the labels to use in the plot.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        data (pd.DataFrame): results dataframe from hyperparameter tuning</span>
+<span class="sd">        ytype (list): list specifying &quot;factor&quot;, &quot;linear&quot; or &quot;log&quot; for each column (returned by set_ytype)</span>
+<span class="sd">        ylabels (list): list specifying the correct labels for each column (by default None)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: list specifying the correct labels for each column</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ylabels</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ylabels</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">))]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ylabels</span><span class="p">)):</span> 
+        <span class="c1"># generate ylabels for categorical columns</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ylabels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">and</span> <span class="n">ytype</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;factor&quot;</span><span class="p">:</span>
+            <span class="n">ylabel</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ylabel</span><span class="p">:</span>
+                    <span class="n">ylabel</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">])</span>
+            <span class="n">ylabel</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">ylabel</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">ylabels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ylabel</span>
+    <span class="k">return</span> <span class="n">ylabels</span></div>
+
+
+<div class="viewcode-block" id="replace_str_values">
+<a class="viewcode-back" href="../../par_coordinates.html#par_coordinates.plot.replace_str_values">[docs]</a>
+<span class="k">def</span> <span class="nf">replace_str_values</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ytype</span><span class="p">,</span> <span class="n">ylabels</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Casts dataframe to numpy for better handling of strings in matplotlib.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        data (pd.DataFrame): results dataframe from hyperparameter tuning</span>
+<span class="sd">        ytype (list): list specifying &quot;factor&quot;, &quot;linear&quot; or &quot;log&quot; for each column (returned by set_ytype)</span>
+<span class="sd">        ylabels (list): list specifying the correct labels for each column (returned by set_ylabels)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.ndarray: processed data array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ytype</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">ytype</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;factor&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)):</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ylabels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">T</span></div>
+
+
+<div class="viewcode-block" id="set_ylim">
+<a class="viewcode-back" href="../../par_coordinates.html#par_coordinates.plot.set_ylim">[docs]</a>
+<span class="k">def</span> <span class="nf">set_ylim</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines y-axis limits for columns in data.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        data (np.ndarray): processed data array (returned by replace_str_values)</span>
+<span class="sd">        ylim (list): list specifying y-axis limits for columns in data (by default None)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: list specifying y-axis limits for columns in data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ylim</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ylim</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ylim</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ylim</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="c1"># default [min, max] for y-axis limits</span>
+            <span class="n">ylim</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:])]</span>
+            <span class="c1"># if min and max are equal add some spacing</span>
+            <span class="k">if</span> <span class="n">ylim</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ylim</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">ylim</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">ylim</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.95</span><span class="p">,</span> <span class="n">ylim</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.05</span><span class="p">]</span>
+            <span class="c1"># if min and max are both 0 default to [0, 1]</span>
+            <span class="k">if</span> <span class="n">ylim</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]:</span>
+                <span class="n">ylim</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">ylim</span></div>
+
+
+<div class="viewcode-block" id="get_performance">
+<a class="viewcode-back" href="../../par_coordinates.html#par_coordinates.plot.get_performance">[docs]</a>
+<span class="k">def</span> <span class="nf">get_performance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ylim</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves and scales the last column corresponding to performance metric.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        data (np.ndarray): processed data array (returned by replace_str_values)</span>
+<span class="sd">        ylim (list): list specifying y-axis limits for columns in data (returned by set_ylim)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.ndarray: performance metric scaled to [0, 1]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y_min</span> <span class="o">=</span> <span class="n">ylim</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">y_max</span> <span class="o">=</span> <span class="n">ylim</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">performance</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span> <span class="o">-</span> <span class="n">y_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">y_max</span> <span class="o">-</span> <span class="n">y_min</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">performance</span></div>
+
+
+<div class="viewcode-block" id="rescale_data">
+<a class="viewcode-back" href="../../par_coordinates.html#par_coordinates.plot.rescale_data">[docs]</a>
+<span class="k">def</span> <span class="nf">rescale_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ytype</span><span class="p">,</span> <span class="n">ylim</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scales secondary y-axes to scale of the main y-axis to guarantee alignment.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        data (np.ndarray): processed data array (returned by replace_str_values)</span>
+<span class="sd">        ytype (list): list specifying &quot;factor&quot;, &quot;linear&quot; or &quot;log&quot; for each column (returned by set_ytype)</span>
+<span class="sd">        ylim (list): list specifying y-axis limits for columns in data (returned by set_ylim)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.ndarray: rescaled data array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">min_0</span> <span class="o">=</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">max_0</span> <span class="o">=</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># main y-axis scale</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">max_0</span> <span class="o">-</span> <span class="n">min_0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ylim</span><span class="p">)):</span>
+        <span class="n">min_i</span> <span class="o">=</span> <span class="n">ylim</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">max_i</span> <span class="o">=</span> <span class="n">ylim</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ytype</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;log&quot;</span><span class="p">:</span>
+            <span class="n">logmin_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">min_i</span><span class="p">)</span>
+            <span class="n">logmax_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">max_i</span><span class="p">)</span>
+            <span class="c1"># secondary y-axis scale if data is logarithmic</span>
+            <span class="n">scale_i</span> <span class="o">=</span> <span class="n">logmax_i</span> <span class="o">-</span> <span class="n">logmin_i</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:])</span> <span class="o">-</span> <span class="n">logmin_i</span><span class="p">)</span> <span class="o">/</span> <span class="n">scale_i</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span> <span class="o">+</span> <span class="n">min_0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">((</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">min_i</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">max_i</span> <span class="o">-</span> <span class="n">min_i</span><span class="p">))</span> <span class="o">*</span> <span class="n">scale</span> <span class="o">+</span> <span class="n">min_0</span>
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="get_path">
+<a class="viewcode-back" href="../../par_coordinates.html#par_coordinates.plot.get_path">[docs]</a>
+<span class="k">def</span> <span class="nf">get_path</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interpolates a curve between the various points for a given observation.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        data (np.ndarray): processed and rescaled data array (returned by rescale_data)</span>
+<span class="sd">        i (int): specifies which observation we are considering</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        matplotlib.path.Path: interpolated curve</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># number of y-axes</span>
+    <span class="n">verts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)],</span> 
+        <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="mi">3</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">codes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">MOVETO</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">CURVE4</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">verts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">verts</span><span class="p">,</span> <span class="n">codes</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">path</span></div>
+
+
+<div class="viewcode-block" id="plot_par_coordinates">
+<a class="viewcode-back" href="../../par_coordinates.html#par_coordinates.plot.plot_par_coordinates">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_par_coordinates</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ytype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylabels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> 
+                         <span class="n">rect</span><span class="o">=</span><span class="p">[</span><span class="mf">0.125</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="n">curves</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> 
+                         <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">colorbar_width</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s2">&quot;inferno_r&quot;</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Displays a parallel coordinates plot of the hyperparameters search.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        data (pd.DataFrame): pandas dataframe where the last column is the performance metric, the others represent </span>
+<span class="sd">        the various hyperparameters values for the search</span>
+<span class="sd">        labels (list): labels for y-axes (default to None)</span>
+<span class="sd">        ytype (list): data type for each axis. Defaults to None which is then mapped to &quot;factor&quot; for strings and &quot;linear&quot; for floats. If ytype is passed, logarithmic axes are also possible, example: [&quot;factor&quot;, &quot;linear&quot;, &quot;log&quot;, [], ...]. Empty fields must be filled with an empty list []</span>
+<span class="sd">        ylim (list): limits for each axis (default to None). Custom min and max values can be passed, example: [[0, 1], [], ...]</span>
+<span class="sd">        ylabels (list): y-tick labels for each axis (default to None). Only use this option if you want to print more categories than you have in your dataset for factor axes. Requires ylim to be set correctly</span>
+<span class="sd">        figsize (tuple): width, height in inches of the image (default to None)</span>
+<span class="sd">        rect: (list): [left, bottom, width, height], defines the position of the figure on the canvas (default to [0.125, 0.1, 0.75, 0.8])</span>
+<span class="sd">        curves (bool): if True, B-spline curves are drawn instead of simple lines (default to True)</span>
+<span class="sd">        linewidth (float): width of the curves/lines (default to 1.0)</span>
+<span class="sd">        alpha (float): transparency of the curves/lines in [0, 1] scale (default to 1.0)</span>
+<span class="sd">        colorbar (bool): if True, colorbar for the performance metric is drawn (default to True)</span>
+<span class="sd">        colorbar_width (float): width of the colorbar (default to 0.02)</span>
+<span class="sd">        cmap (matplotlib.colors.Colormap): color palette for colorbar (default to &quot;inferno_r&quot;)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        matplotlib.figure.Figure: figure to be displayed, saved or further customized</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="p">[</span><span class="n">left</span><span class="p">,</span> <span class="n">bottom</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">]</span> <span class="o">=</span> <span class="n">rect</span>
+    <span class="c1"># work on copy as the dataframe will be processed</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># set default labels to column names</span>
+    <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span>
+
+    <span class="c1"># processing</span>
+    <span class="n">ytype</span> <span class="o">=</span> <span class="n">set_ytype</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ytype</span><span class="p">,</span> <span class="n">colorbar</span><span class="p">)</span> 
+    <span class="n">ylabels</span> <span class="o">=</span> <span class="n">set_ylabels</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ytype</span><span class="p">,</span> <span class="n">ylabels</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">replace_str_values</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ytype</span><span class="p">,</span> <span class="n">ylabels</span><span class="p">)</span>
+    <span class="n">ylim</span> <span class="o">=</span> <span class="n">set_ylim</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ylim</span><span class="p">)</span>
+    <span class="n">performance</span> <span class="o">=</span> <span class="n">get_performance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ylim</span><span class="p">)</span>
+    <span class="c1"># notice: rescale_data affects only secondary y-axes</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">rescale_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ytype</span><span class="p">,</span> <span class="n">ylim</span><span class="p">)</span>
+
+    <span class="c1"># create figure</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+    <span class="c1"># create axes</span>
+    <span class="n">ax0</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="n">left</span><span class="p">,</span> <span class="n">bottom</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">])</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ax0</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">ax0</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="c1"># set color to colormap if provided</span>
+        <span class="k">if</span> <span class="n">colorbar</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">cmap</span><span class="p">(</span><span class="n">performance</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="c1"># otherwise default to blue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span>
+
+        <span class="c1"># plot interpolated curve if requested </span>
+        <span class="k">if</span> <span class="n">curves</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">get_path</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">patch</span> <span class="o">=</span> <span class="n">PathPatch</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> 
+                    <span class="n">edgecolor</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">ax0</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">patch</span><span class="p">)</span>
+        <span class="c1"># otherwise plot simple lines</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># format x-axis</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">tick_top</span><span class="p">()</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+
+    <span class="c1"># format y-axis</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">axes</span><span class="p">):</span>
+        <span class="c1"># reposition left spine</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_position</span><span class="p">((</span><span class="s2">&quot;axes&quot;</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">i</span><span class="p">))</span>
+        <span class="c1"># remove top, right and bottom spines</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;right&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;bottom&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+        <span class="c1"># set ylim, yscale, yticks and yticklabels</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylim</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">ytype</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;log&quot;</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ytype</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;factor&quot;</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ylabels</span><span class="p">[</span><span class="n">i</span><span class="p">])))</span>
+        <span class="k">if</span> <span class="n">ylabels</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">ylabels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        
+    <span class="k">if</span> <span class="n">colorbar</span><span class="p">:</span>
+        <span class="c1"># add axis for colorbar and customize it</span>
+        <span class="n">bar</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="n">left</span> <span class="o">+</span> <span class="n">width</span><span class="p">,</span> <span class="n">bottom</span><span class="p">,</span> <span class="n">colorbar_width</span><span class="p">,</span> <span class="n">height</span><span class="p">])</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">ylim</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">vmax</span><span class="o">=</span><span class="n">ylim</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">matplotlib</span><span class="o">.</span><span class="n">colorbar</span><span class="o">.</span><span class="n">ColorbarBase</span><span class="p">(</span><span class="n">bar</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;vertical&quot;</span><span class="p">)</span>
+        <span class="n">bar</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">bar</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([])</span>
+
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Tommaso Ferracci.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
