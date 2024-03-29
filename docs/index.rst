@@ -1,4 +1,4 @@
-Welcome to par_coordinates's documentation!
+Welcome to par_coordinates!
 ===========================================
 
 .. toctree::

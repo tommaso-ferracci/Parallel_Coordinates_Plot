@@ -1,4 +1,6 @@
+.pytest_cache/
 src/par_coords/__pycache__/
 src/build/
 src/dist/
+tests/__pycache__/
 *.egg-info/
